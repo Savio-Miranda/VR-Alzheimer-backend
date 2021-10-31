@@ -1,6 +1,7 @@
-from flask import Blueprint, request, current_app
-from database.serializer import UsersSchema
+from flask import Blueprint, request, current_app, jsonify
+from database.serializer import UsersSchema, PatientsSchema
 from database.model import Users
+import json
 
 bp_users = Blueprint('users', __name__)
 
@@ -33,6 +34,19 @@ def read_one(id):
     if user is None:
         return {'message': 'user not found'}, 404
     return us.jsonify(user)
+
+
+@bp_users.route('/api/users/<id>/patients', methods=['GET'])
+def read_patients(id):
+    ps = PatientsSchema()
+    user = Users.query.filter(Users.id == id).first()
+    print(user)
+    if user is None:
+        return {'message': 'user not found'}, 404
+    patients = [json.loads(ps.dumps(p)) for p in user.patients]
+    print("patients: ", patients)
+    return jsonify(patients)
+
 
 @bp_users.route('/api/users', methods=['PUT'])
 def update():
