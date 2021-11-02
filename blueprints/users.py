@@ -36,10 +36,11 @@ def read_one(id):
     return us.jsonify(user)
 
 
-@bp_users.route('/api/users/<email>', methods=['GET'])
-def read_email(email):
+@bp_users.route('/api/users/login', methods=['POST'])
+def read_email():
+    data = request.json
     us = UsersSchema()
-    user = Users.query.filter(Users.email == email).first()
+    user = Users.query.filter(Users.email == data['email']).first()
     if user is None:
         return {'message': 'user not found'}, 404
     return us.jsonify(user)
